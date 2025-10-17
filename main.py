@@ -1,4 +1,5 @@
 import os
+import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +7,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from google import genai
 from google.genai import types
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
 
@@ -46,7 +49,8 @@ async def check_symptoms(request: SymptomRequest):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        logging.error(f"Error in check_symptoms endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="An error occurred while processing your request. Please try again later.")
 
 @app.get("/")
 async def read_root():
